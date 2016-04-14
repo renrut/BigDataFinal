@@ -5,3 +5,7 @@ The goal of this project is to accurately predict which NBA teams will make it t
 
 #Model
 Our model is a work in progress, but we use player and team popularity, team streakiness, injuries, player records, and playoff history from previous seasons.
+
+#Dependencies
+
+pip install py-goldsberry
