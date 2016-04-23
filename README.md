@@ -9,6 +9,7 @@ Our model is a work in progress, but we use player and team popularity, team str
 #Dependencies
 
 pip install scikit-learn
+
 pip install selenium
 
 #Basketball-Reference Scraper
