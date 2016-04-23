@@ -1,0 +1,31 @@
+TEAM_ID,TEAM_CITY,TEAM_NAME,TEAM_ABBREVIATION,ALT1,ALT2,STATLOOKUP
+1610612752,New York,Knicks,NYK,null,null,NYK
+1610612763,Memphis,Grizzlies,MEM,null,null,MEM
+1610612760,Oklahoma City,Thunder,OKC,SEA,null,OKC
+1610612757,Portland,Trail Blazers,POR,null,null,POR
+1610612740,New Orleans,Pelicans,NOP,NOH,null,NOP
+1610612755,Philadelphia,76ers,PHI,null,null,PHI
+1610612754,Indiana,Pacers,IND,null,null,IND
+1610612742,Dallas,Mavericks,DAL,null,null,DAL
+1610612748,Miami,Heat,MIA,null,null,MIA
+1610612751,Brooklyn,Nets,BRK,NJN,BKN,BKN
+1610612759,San Antonio,Spurs,SAS,null,null,SAS
+1610612749,Milwaukee,Bucks,MIL,null,null,MIL
+1610612765,Detroit,Pistons,DET,null,null,DET
+1610612737,Atlanta,Hawks,ATL,null,null,ATL
+1610612745,Houston,Rockets,HOU,null,null,HOU
+1610612743,Denver,Nuggets,DEN,null,null,DEN
+1610612738,Boston,Celtics,BOS,null,null,BOS
+1610612741,Chicago,Bulls,CHI,null,null,CHI
+1610612744,Golden State,Warriors,GSW,null,null,GSW
+1610612746,Los Angeles,Clippers,LAC,null,null,LAC
+1610612756,Phoenix,Suns,PHO,PHX,null,PHX
+1610612764,Washington,Wizards,WAS,null,null,WAS
+1610612750,Minnesota,Timberwolves,MIN,null,null,MIN
+1610612766,Charlotte,Hornets,CHA,CHO,null,CHA
+1610612747,Los Angeles,Lakers,LAL,null,null,LAL
+1610612762,Utah,Jazz,UTA,null,null,UTA
+1610612761,Toronto,Raptors,TOR,null,null,TOR
+1610612758,Sacramento,Kings,SAC,null,null,SAC
+1610612753,Orlando,Magic,ORL,null,null,ORL
+1610612739,Cleveland,Cavaliers,CLE,null,null,CLE
