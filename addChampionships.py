@@ -25,14 +25,16 @@ champs= {
 }
 
 data = pd.read_csv("data/season_stats_regular_season.csv")
+data.drop(data.columns[0,1], axis=1)
+data.to_csv("data/season_stats_regular_season.csv", index=False)
 
-data['champs'] = numpy.zeros(len(data.index))
-for index, row in data.iterrows():
-	print row['TEAM_ID'], champs[row['SEASON_ID']]
-	if champs[row['SEASON_ID']] == row['TEAM_ID']:
-		data.loc[index, 'champs'] = 1
-	else:
-		data.loc[index, 'champs'] = 0
-print data['champs']
+#new_df = pd.concat([data.TEAM_ID,data.SEASON_ID],axis=1)
 
-data.to_csv("data/season_stats_regular_season.csv")
+#new_df['champs'] = numpy.zeros(len(data.index))
+#for index, row in data.iterrows():
+#	if champs[row['SEASON_ID']] == row['TEAM_ID']:
+#		new_df.loc[index, 'champs'] = 1
+#	else:
+#		new_df.loc[index, 'champs'] = 0
+#print new_df
+#new_df.to_csv("data/champs.csv")
