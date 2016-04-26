@@ -1,0 +1,30 @@
+Baseline
+	team stats
+	game logs
+
+	Transformations
+		Pt Difference
+		Total Points of team per season
+
+
+
+Winning Players
+	Transformations:
+		average winning team setup
+			bday, weight, height, exp of players
+		PPG||PPS/Timeplayed with experience in league
+
+		Player College:
+
+
+
+
+Data:
+#season_stats
+TEAM_ID	TEAM_NAME,GP,W,L,W_PCT,MIN,FGM,FGA,FG_PCT,FG3M,FG3A,FG3_PCT,FTM	FTA,FT_PCT,OREB,DREB,REB,AST,TOV,STL,BLK,BLKA,PF,PFD,PTS,PLUS_MINUS,CFID,CFPARAMS
+
+#allteams2016/playerroster
+No.,Player,Pos,Ht,Wt,Birth Date,Exp,College,NYK
+
+#game_logs_regular_season
+SEASON_ID,TEAM_ID,TEAM_ABBREVIATION,TEAM_NAME,GAME_ID,GAME_DATE,MATCHUP,WL,MIN,FGM,FGA,FG_PCT,FG3M,FG3A,FG3_PCT,FTM	FTA,FT_PCT,OREB,DREB,REB,AST,STL,BLK,TOV,PF,PTS,PLUS_MINUS,VIDEO_AVAILABLE
