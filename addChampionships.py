@@ -26,9 +26,10 @@ champs= {
 
 data = pd.read_csv("data/season_stats_regular_season.csv")
 data_adv = pd.read_csv("data/advanced_stats_regular_season.csv")
-for index, row in data.iterrows():
-	data.loc[index, 'AST/TO'] = row['AST']/row['TOV']
-data.to_csv("data/season_stats_regular_season.csv", index=False)
+new_cols = ['OFF_RATING','DEF_RATING','NET_RATING','AST_PCT','AST_TO','AST_RATIO','OREB_PCT','DREB_PCT','REB_PCT','TM_TOV_PCT','EFG_PCT','TS_PCT','PACE','PIE']
+for col in new_cols:
+	data[col] = data_adv[col]
+data.to_csv("data/combo_stats_regular_season.csv", index=False)
 
 #new_df = pd.concat([data.TEAM_ID,data.SEASON_ID],axis=1)
 
