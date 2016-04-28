@@ -23,13 +23,45 @@ champs= {
 	42014: 1610612744,
 	42015: 0
 }
+year = 2014
 
-data = pd.read_csv("data/season_stats_regular_season.csv")
-data_adv = pd.read_csv("data/advanced_stats_regular_season.csv")
-new_cols = ['OFF_RATING','DEF_RATING','NET_RATING','AST_PCT','AST_TO','AST_RATIO','OREB_PCT','DREB_PCT','REB_PCT','TM_TOV_PCT','EFG_PCT','TS_PCT','PACE','PIE']
-for col in new_cols:
-	data[col] = data_adv[col]
-data.to_csv("data/combo_stats_regular_season.csv", index=False)
+data = pd.read_csv("data/combo_stats_regular_season.csv")
+
+def get_lg_avg(stat):
+	return data.loc[data['SEASON_ID'] == year+40000, stat].sum()
+
+playerDF = pd.read_csv('data/PlayerTotals/teams_GSW_2015_totals.csv')
+print playerDF
+
+team_stats = playerDF.tail(1)
+
+for index, row in playerDF.iterrows():
+	print str(row.Player)
+	factor = (2.0/3) - (0.5*(get_lg_avg('AST')/get_lg_avg('FGM')))/(2*(get_lg_avg('FGM')/get_lg_avg('FTM')))
+	print factor
+	VOP = get_lg_avg('PTS')/(get_lg_avg('FGA')-get_lg_avg('OREB')+get_lg_avg('TOV')+0.44*get_lg_avg('FTA'))
+	print VOP
+	DRB_per = (get_lg_avg('REB')-get_lg_avg('OREB')) / get_lg_avg('REB')
+	print DRB_per
+	ast_FG = team_stats['AST']/team_stats['FG']
+
+	uPER = (1.0/row.MP) * \
+			(row['3P'] + \
+			(2.0/3) * row.AST + \
+			(2.0 - factor * ast_FG) * row.FG + \
+			(row.FT * 0.5 * (1 + (1 - ast_FG) + (2.0/3) * ast_FG)) - \
+			(VOP * row.TOV) - \
+			(VOP * DRB_per * (row.FGA - row.FG)) - \
+			(VOP * 0.44 * (0.44 + (0.56 * DRB_per)) * (row.FTA - row.FT)) + \
+			(VOP * (1 - DRB_per) * (row.TRB - row.ORB)) + \
+			(VOP * DRB_per * row.ORB) + \
+			(VOP * row.STL) + \
+			(VOP * DRB_per * row.BLK) - \
+			row.PF * ((get_lg_avg('FTM')/get_lg_avg('PF'))-0.44* (get_lg_avg('FTM')/get_lg_avg('PF')) * VOP))
+	aPER = 93.9 * uPER
+	print aPER
+	print str(row.Player) + ": " + str(uPER)
+#data.to_csv("data/combo_stats_regular_season.csv", index=False)
 
 #new_df = pd.concat([data.TEAM_ID,data.SEASON_ID],axis=1)
 

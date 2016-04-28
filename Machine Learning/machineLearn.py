@@ -91,12 +91,12 @@ for year in squads:
 
 	def load_teams():
 		# read in data into Pandas DataFrame
-		df = pd.read_csv('data/combo_stats_regular_season.csv')
+		df = pd.read_csv('../data/combo_stats_regular_season.csv')
 
 		teams = []
 		# self-descriptive. What these indices correspond to are listed above
 		stats_to_use = ['SEASON_ID','TEAM_ID','TEAM_NAME','GP','W','L','W_PCT','FGM','FG_PCT','FG3M','FG3_PCT',
-						'FTM','FT_PCT','AST_TO','AST_RATIO','STL','BLK','NET_RATING','PACE']
+						'FTM','FT_PCT','AST_TO','AST_RATIO','STL','BLK','REB_PCT','NET_RATING','PACE']
 		# converting every row into a list and then appending it to the input matrix stored into an array
 		for index, row in df.iterrows():
 			teams.append([row.tolist()[indices[x]] for x in stats_to_use])
@@ -107,7 +107,7 @@ for year in squads:
 	# TEAM_ID, SEASON_ID, champs
 	def load_champs():
 		# read champs data to Pandas DataFrame
-		df = pd.read_csv('data/champs.csv')
+		df = pd.read_csv('../data/champs.csv')
 
 		champs = {}
 		# mark a (team, year) tuple as champions or not
@@ -185,7 +185,7 @@ for year in squads:
 
 		print "SGD Classifier"
 		# dividing wins for each team by the number of simulations
-		playoffDF = pd.read_csv('data/season_stats_playoffs.csv')
+		playoffDF = pd.read_csv('../data/season_stats_playoffs.csv')
 		playoffDF = playoffDF.loc[playoffDF['SEASON_ID'] == 40000+year]
 		resSGD = numpy.true_divide(resSGD, sims)
 		for i in range(0,amt):
