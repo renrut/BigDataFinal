@@ -1,4 +1,5 @@
 import pandas as pd
+from operator import add
 import scipy
 import numpy
 from sklearn import linear_model
@@ -6,7 +7,37 @@ from sklearn.metrics import roc_auc_score, classification_report
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.cross_validation import StratifiedKFold, PredefinedSplit
+year = 1998
 
+squads = {
+	1996: ["Atlanta Hawks","Boston Celtics","Charlotte Hornets","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Vancouver Grizzlies","Washington Bullets"],
+	1997: ["Atlanta Hawks","Boston Celtics","Charlotte Hornets","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Vancouver Grizzlies","Washington Wizards"],
+	1998: ["Atlanta Hawks","Boston Celtics","Charlotte Hornets","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Vancouver Grizzlies","Washington Wizards"],
+	1999: ["Atlanta Hawks","Boston Celtics","Charlotte Hornets","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Vancouver Grizzlies","Washington Wizards"],
+	2000: ["Atlanta Hawks","Boston Celtics","Charlotte Hornets","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Vancouver Grizzlies","Washington Wizards"],
+	2001: ["Atlanta Hawks","Boston Celtics","Charlotte Hornets","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2002: ["Atlanta Hawks","Boston Celtics","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New Orleans Hornets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2003: ["Atlanta Hawks","Boston Celtics","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New Orleans Hornets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2004: ["Atlanta Hawks","Boston Celtics","Charlotte Bobcats","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New Orleans Hornets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2005: ["Atlanta Hawks","Boston Celtics","Charlotte Bobcats","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New Orleans Hornets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2006: ["Atlanta Hawks","Boston Celtics","Charlotte Bobcats","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New Orleans Hornets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2007: ["Atlanta Hawks","Boston Celtics","Charlotte Bobcats","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New Orleans Hornets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2008: ["Atlanta Hawks","Boston Celtics","Charlotte Bobcats","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New Orleans Hornets","New York Knicks","Oklahoma City Thunder","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2009: ["Atlanta Hawks","Boston Celtics","Charlotte Bobcats","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New Orleans Hornets","New York Knicks","Oklahoma City Thunder","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2010: ["Atlanta Hawks","Boston Celtics","Charlotte Bobcats","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New Orleans Hornets","New York Knicks","Oklahoma City Thunder","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2011: ["Atlanta Hawks","Boston Celtics","Charlotte Bobcats","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New Orleans Hornets","New York Knicks","Oklahoma City Thunder","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2012: ["Atlanta Hawks","Boston Celtics","Brooklyn Nets","Charlotte Bobcats","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Orleans Hornets","New York Knicks","Oklahoma City Thunder","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2013: ["Atlanta Hawks","Boston Celtics","Brooklyn Nets","Charlotte Bobcats","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Orleans Pelicans","New York Knicks","Oklahoma City Thunder","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2014: ["Atlanta Hawks","Boston Celtics","Brooklyn Nets","Charlotte Hornets","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Orleans Pelicans","New York Knicks","Oklahoma City Thunder","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Toronto Raptors","Utah Jazz","Washington Wizards"],
+	2015: ["Atlanta Hawks","Boston Celtics","Brooklyn Nets","Charlotte Hornets","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Memphis Grizzlies","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Orleans Pelicans","New York Knicks","Oklahoma City Thunder","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Toronto Raptors","Utah Jazz","Washington Wizards"]
+}
+
+mod = 0
+for i in range(2014,year,-1):
+	mod += len(squads[i])
+print mod
+squad = squads[year]
+amt = len(squad)
 
 # 0SEASON_ID,1TEAM_ID,2TEAM_NAME,3GP,4W,5L,6W_PCT,7MIN,8FGM,9FGA,10FG_PCT,11FG3M,12FG3A,13FG3_PCT,
 # 14FTM,15FTA,16FT_PCT,17OREB,18DREB,19REB,20AST,21TOV,22STL,23BLK,24BLKA,25PF,26PTS,27PLUS_MINUS
@@ -14,12 +45,10 @@ def load_teams():
 	df = pd.read_csv('data/season_stats_regular_season.csv')
 
 	teams = []
-	indices_to_use = [0,1,2,3,4,5,6,8,10,11,13,14,16,17,18,20,21,22,23,25,27]
+	indices_to_use = [0,1,2,3,4,5,6,10,13,16,17,18,20,21,22,23,25,27]
 	for index, row in df.iterrows():
 		teams.append([row.tolist()[x] for x in indices_to_use])
-	for team in teams[:3]:
-		print team
-	return teams
+	return teams[:-30]
 
 
 # TEAM_ID, SEASON_ID, champs
@@ -63,20 +92,13 @@ def create_output(teams, champs):
 
 
 def test_classifier(clf, X, Y):
-	folds = StratifiedKFold(Y, 19)
+	folds = StratifiedKFold(Y, 18)
 	aucs = []
 	for train, test in folds:
-		# Sizes
-		# print X[train].shape, Y[train].shape
-		# print X[test].shape, len(prediction)
 
 		clf.fit(X[train], Y[train])
 		prediction_prob = clf.predict_proba(X[test])
 		prediction = clf.predict(X[test])
-#		print "----Y Test-----"
-#		print Y[test]
-#		print "====Prediction====="
-#		print prediction
 		aucs.append(roc_auc_score(Y[test], prediction_prob[:, 1]))
 	print clf.__class__.__name__, aucs, numpy.mean(aucs)
 
@@ -85,31 +107,27 @@ def main():
 	teams, champs = load()
 	X = create_input(teams)
 	Y = create_output(teams, champs)
-
-	print X
-	print Y
-
-	ps = PredefinedSplit(test_fold=([-1]*532+[0]*30))
+	# to explicitly define what are the test and train sets
+	ps = PredefinedSplit(test_fold=([-1]*(len(teams)-amt-mod)+[0]*amt+[-1]*(mod)))
+	resSGD = scipy.zeros(amt)
+	sims = 1000
 	for train_index, test_index in ps:
 		X_train, X_test = X[train_index], X[test_index]
 		y_train, y_test = Y[train_index], Y[test_index]
-		print "SGD Classifier"
-		clf = linear_model.SGDClassifier(loss='log')
-		clf.fit(X_train, y_train)
-		print clf.predict(X_test)
-		print y_test
 
-		print "GaussianNB Classifier"
-		clf = GaussianNB()
-		clf.fit(X_train, y_train)
-		print clf.predict(X_test)
-		print y_test
+		for i in range(0,sims):
+			# see which classifier predicts what victor
+			
+			clf = linear_model.SGDClassifier(loss='log')
+			clf.fit(X_train, y_train)
+			cur = clf.predict(X_test)
+			resSGD = map(add, resSGD, cur)
 
-		print "RandomForest Classifier"
-		clf = RandomForestClassifier(n_estimators=10, max_depth=10)
-		clf.fit(X_train, y_train)
-		print clf.predict(X_test)
-		print y_test
+	print "SGD Classifier"
+	resSGD = numpy.true_divide(resSGD, sims)
+	for i in range(0,amt):
+		print str(squad[i])+": "+str(round(100*resSGD[i]/sum(resSGD), 1))
+	print "\n\n"
 
 	clf = linear_model.SGDClassifier(loss='log')
 	test_classifier(clf, X, Y)
