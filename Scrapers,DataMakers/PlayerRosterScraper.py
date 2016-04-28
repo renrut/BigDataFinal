@@ -14,7 +14,7 @@ teamabrev = []
 abrevdict = {}
 URLlist = []
 count = 30
-year = "2008"
+year = "2005"
 
 with open('data/br_teamid.csv','rb') as fi:
 	reader = csv.reader(fi)
@@ -34,6 +34,8 @@ with open('data/br_teamid.csv','rb') as fi:
 
 #remove title
 teamabrev.pop(0)
+teamabrev.append("SEA")
+teamabrev.append("NOK")
 
 #generate list of URLs
 teamabrev = sorted(teamabrev)
@@ -57,20 +59,15 @@ for url in URLlist:
 		print "Couldn't get " + url + " id may have changed."
 
 
-#Move into our folder
-for team in teamabrev:
-	name1 = "teams_"+ team +"_"+year+"_roster.csv"
-	name2 = "teams_"+ team +"_"+year+"_totals.csv"
-	try:
-		os.rename("/Users/turnerstrayhorn/Downloads/"+name1, "/Users/turnerstrayhorn/Turner/School/BigData/BigDataFinal/data/Players/"+name1)
-		os.rename("/Users/turnerstrayhorn/Downloads/"+name2, "/Users/turnerstrayhorn/Turner/School/BigData/BigDataFinal/data/Players/"+name2)
-	except:
-		print team + " not found. Trying alternatives."
-		for x in abrevdict[team]:
-				name1 = "teams_"+ x +"_"+year+"_roster.csv"
-				name2 = "teams_"+ x +"_"+year+"_totals.csv"
-				try:
-					os.rename("/Users/turnerstrayhorn/Downloads/"+name1, "/Users/turnerstrayhorn/Turner/School/BigData/BigDataFinal/data/Players/"+name1)
-					os.rename("/Users/turnerstrayhorn/Downloads/"+name2, "/Users/turnerstrayhorn/Turner/School/BigData/BigDataFinal/data/Players/"+name2)
-				except:
-					print x + " not found."
+#Move into data folder
+name = "/Users/turnerstrayhorn/Downloads/"
+moveroster = "/Users/turnerstrayhorn/Turner/School/BigData/BigDataFinal/data/PlayerRosters"
+movetotals = "/Users/turnerstrayhorn/Turner/School/BigData/BigDataFinal/data/PlayerTotals"
+
+for i in os.listdir(name):
+    if "roster" in i: 
+        os.rename(name + i, moveroster + i)
+    elif "total" in i:
+    	os.rename(name + i, movetotals + i)
+    else:
+        continue
