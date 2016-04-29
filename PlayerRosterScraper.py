@@ -14,7 +14,9 @@ teamabrev = []
 abrevdict = {}
 URLlist = []
 count = 30
-year = "2005"
+year = sys.argv[1]
+user = "yourusernamehere"
+path = os.getcwd()
 
 with open('data/br_teamid.csv','rb') as fi:
 	reader = csv.reader(fi)
@@ -34,13 +36,14 @@ with open('data/br_teamid.csv','rb') as fi:
 
 #remove title
 teamabrev.pop(0)
+#hacky cases added as I moved back in time since team abbreviations changed.
 teamabrev.append("SEA")
 teamabrev.append("NOK")
 
 #generate list of URLs
 teamabrev = sorted(teamabrev)
 for team in teamabrev:
-	URLlist.append("http://www.basketball-reference.com/teams/"+team+"/"+year+".html")
+	URLlist.append("http://www.basketball-reference.com/teams/"+team+"/"+str(year)+".html")
 
 driver = webdriver.Chrome()
 #download the csvs!
@@ -60,9 +63,9 @@ for url in URLlist:
 
 
 #Move into data folder
-name = "/Users/turnerstrayhorn/Downloads/"
-moveroster = "/Users/turnerstrayhorn/Turner/School/BigData/BigDataFinal/data/PlayerRosters"
-movetotals = "/Users/turnerstrayhorn/Turner/School/BigData/BigDataFinal/data/PlayerTotals"
+name = "/Users/"+name+"/Downloads/"
+moveroster = path + "/BigDataFinal/data/PlayerRosters"
+movetotals = path + "/BigDataFinal/data/data/PlayerTotals"
 
 for i in os.listdir(name):
     if "roster" in i: 

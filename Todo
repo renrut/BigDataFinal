@@ -1,0 +1,8 @@
+TODO:
+	-Finish PER MR
+	-Run ML on
+		-Baseline
+		-Baseline + PlayerTotals
+		-Baseline + PlayerTotals + Freethrow Help
+	-Readme
+	-Represent Prediction somehow to put in paper and write conclusion for it.

@@ -101,7 +101,6 @@ class SeasonCount(MRJob):
 #output should be avg weight for PG, C, PF, SF, SG on winning teams
     
 if __name__ == '__main__':
-    SeasonCount.run()
-
-
-
+    #SeasonCount.run()
+    #TeamAvg.run()
+    Colleges.run()
