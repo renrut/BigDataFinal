@@ -92,7 +92,7 @@ for year in squads:
 
 	def load_teams():
 		# read in data into Pandas DataFrame
-		df = pd.read_csv('../data/combo_stats_regular_season.csv')
+		df = pd.read_csv('data/combo_stats_regular_season.csv')
 
 		teams = []
 		# self-descriptive. What these indices correspond to are listed above
@@ -108,7 +108,7 @@ for year in squads:
 	# TEAM_ID, SEASON_ID, champs
 	def load_champs():
 		# read champs data to Pandas DataFrame
-		df = pd.read_csv('../data/champs.csv')
+		df = pd.read_csv('data/champs.csv')
 
 		champs = {}
 		# mark a (team, year) tuple as champions or not
@@ -186,7 +186,7 @@ for year in squads:
 
 		print "SGD Classifier"
 		# dividing wins for each team by the number of simulations
-		playoffDF = pd.read_csv('../data/season_stats_playoffs.csv')
+		playoffDF = pd.read_csv('data/season_stats_playoffs.csv')
 		playoffDF = playoffDF.loc[playoffDF['SEASON_ID'] == 40000+year]
 		resSGD = numpy.true_divide(resSGD, sims)
 		for i in range(0,amt):
