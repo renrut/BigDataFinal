@@ -1,0 +1,12 @@
+TODO:
+	-Finish PER MR
+		-Just modify the function on bottom and run it "python playerMR.py /path/to/data > outputname.txt"
+		-then run output through cleaner.py to get csv "cleaner.py outputname.txt"
+	-Run ML on
+		-Baseline
+		-Baseline + PlayerTotals
+		-Baseline + PlayerTotals + Freethrow Help
+	-Readme
+	-Represent Prediction somehow to put in paper and write conclusion for it 
+		-could just be a table of actual winners v predicted winners & output with explanation of why it messed up (if it did).
+	-Remove todo

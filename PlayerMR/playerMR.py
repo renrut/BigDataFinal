@@ -58,7 +58,7 @@ class Colleges(MRJob):
 #9 2014
 #POS, WEIGHT, AGE, WIN
 class TeamAvg(MRJob):
-    print "[win,pos] [avg. age, avg. weight]"
+    "[win,pos] [avg. age, avg. weight]"
     def mapper(self, _, line):
         data = line.split(',')
         pos = data[2]
@@ -79,7 +79,7 @@ class TeamAvg(MRJob):
 
 #MR Job gets the average number of player seasons for team
 class SeasonCount(MRJob):
-    print "[win,pos] [avg. age, avg. weight]"
+    "[win,pos] [avg. age, avg. weight]"
     def mapper(self, _, line):
         data = line.split(',')
         year = int(data[9])
@@ -98,10 +98,25 @@ class SeasonCount(MRJob):
         yield win, seasonsavg
 
 
+#MR Job gets the average number of player seasons for team
+class PlayerPER(MRJob):
+    def mapper(self, _, line):
+        #split data lines into list
+        data = line.split(',')
+        team = data[8]#MAY NEED TO CHANGE
+        year = int(data[9])
+        playerPER = 0#make functioncall here
+        yield (year, team), playerPER
+
+    def reducer(self, team, playerPER):
+        #may need to typecast generator to list, but dont think so...
+        yield team, sum(playerPER)
+
+
 #output should be avg weight for PG, C, PF, SF, SG on winning teams
     
 if __name__ == '__main__':
-    SeasonCount.run()
-
-
-
+    #SeasonCount.run()
+    #TeamAvg.run()
+    #Colleges.run()
+    PlayerPER.run()
