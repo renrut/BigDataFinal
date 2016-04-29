@@ -11,11 +11,11 @@ Many of our scripts need to be run in the root folder to properly access the dat
 
 #Dependencies
 
-'''
+```
 pip install scikit-learn
 pip install selenium
 Chromedriver - https://sites.google.com/a/chromium.org/chromedriver/
-'''
+```
 
 #Basketball-Reference Scraper
 
@@ -25,35 +25,39 @@ ActivePlayerCompiler.py uses selenium web browser automation to open each teams'
 
 Note: For it to move rosters and totals into the respective directory, you may need to check out the code towards the bottom of the file. You will also need to update your username and path to the downloads directory if not on a mac or chrome options are changed.
 
-
-'python PlayerRosterScraper.py <year>'
-
+```
+python PlayerRosterScraper.py <year>
+```
 I tried to make it work for every team, however it proved difficult as 
 
 #Stats.NBA Scraper
 
 This was much easier and simply consisted of a few api calls to stats.nba.com
-'python game_log_scraper.py'
+```
+python game_log_scraper.py
+```
 
 #Map-Reduce
 This script makes use of Yelps MRJob module. Therefore it can be deployed on Amazon EMR, a hadoop cluster, or locally with relative ease. Since our data wasn't huge (unfortunately only so much data exists for our application), we chose to run the MRJobs locally. Right now to run each job you need to uncomment it in the main method of playerMR.py
 
 To run the playerMR.py
-'''
+```
 python playerMR.py ../data/allteamsroster.csv > output.txt
 python cleaner.py output.txt
-'''
+```
 cleaner.py will take it in as a txt file, and clean it up into comma separated format.
 
 Similarly, to run gamelogMR.py which runs a MapReduce job to see how many games were won thanks to freethrows,
 
-'''
+```
 python gamelogMR.py ../data/season_stats_regular_season.csv > ftwins.txt
 python cleaner.py ftwins.txt
-''' 
+``` 
 
 #Machine Learning
 Our machine learning uses scikit-learn on our data. To run it, do
-'python machineLearn.py'
+```
+python machineLearn.py
+```
 
 
