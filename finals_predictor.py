@@ -8,6 +8,11 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.cross_validation import StratifiedKFold, PredefinedSplit
 
+# Base Stats
+# Base + Team_PER
+# FT
+# Everything combined
+
 # makes output correct year to year
 squads = {
 	1996: ["Atlanta Hawks","Boston Celtics","Charlotte Hornets","Chicago Bulls","Cleveland Cavaliers","Dallas Mavericks","Denver Nuggets","Detroit Pistons","Golden State Warriors","Houston Rockets","Indiana Pacers","Los Angeles Clippers","Los Angeles Lakers","Miami Heat","Milwaukee Bucks","Minnesota Timberwolves","New Jersey Nets","New York Knicks","Orlando Magic","Philadelphia 76ers","Phoenix Suns","Portland Trail Blazers","Sacramento Kings","San Antonio Spurs","Seattle SuperSonics","Toronto Raptors","Utah Jazz","Vancouver Grizzlies","Washington Bullets"],
@@ -78,6 +83,7 @@ indices = {
 }
 
 for year in squads:
+	#year = 2015
 	print "YEAR = "+str(year)
 
 	# mod is used as basically a way to shift the position of the train and test sets. Has to be variable as
@@ -85,7 +91,6 @@ for year in squads:
 	mod = 0
 	for i in range(2014,year,-1):
 		mod += len(squads[i])
-	print mod
 	squad = squads[year]
 	# number of teams in the current year
 	amt = len(squad)
@@ -93,23 +98,20 @@ for year in squads:
 	def load_teams():
 		# read in data into Pandas DataFrame
 		df = pd.read_csv('data/combo_stats_regular_season.csv')
-
 		teams = []
 		# self-descriptive. What these indices correspond to are listed above
-		stats_to_use = ['SEASON_ID','TEAM_ID','TEAM_NAME','GP','W','L','W_PCT','FGM','FG_PCT','FG3M','FG3_PCT',
-						'FTM','FT_PCT','AST_TO','AST_RATIO','STL','BLK','REB_PCT','NET_RATING','PACE','TEAM_PER']
+		stats_to_use = ['SEASON_ID','TEAM_ID','TEAM_NAME','GP','W','L','W_PCT','FG_PCT','FG3_PCT',
+						'FT_PCT','AST_TO','AST_PCT','STL','BLK','REB_PCT','NET_RATING','PLUS_MINUS','TEAM_PER']
 		# converting every row into a list and then appending it to the input matrix stored into an array
 		for index, row in df.iterrows():
 			teams.append([row.tolist()[indices[x]] for x in stats_to_use])
 		# for now ignore the most recent season as it screws up data of past years
 		return teams[:-30]
 
-
 	# TEAM_ID, SEASON_ID, champs
 	def load_champs():
 		# read champs data to Pandas DataFrame
 		df = pd.read_csv('data/champs.csv')
-
 		champs = {}
 		# mark a (team, year) tuple as champions or not
 		for index, row in df.iterrows():
@@ -120,10 +122,8 @@ for year in squads:
 				champs[(team, year)] = 1
 		return champs
 
-
 	def load():
 		return load_teams(), load_champs()
-
 
 	def create_input(teams):
 		# don't want to cinlude SEASON_ID,TEAM_ID,TEAM_NAME,GP,W,L in predicition
@@ -135,7 +135,6 @@ for year in squads:
 				X[i, j-SKIP] = teams[i][j] if teams[i][j] != '' else 0
 		return X
 
-
 	def create_output(teams, champs):
 		# for every team/season combination mark if champs or not
 		Y = scipy.zeros(len(teams))
@@ -144,10 +143,7 @@ for year in squads:
 			team = teams[i][1]
 			if (team, year) in champs:
 				Y[i] = 1
-		#should be 19 always
-		print 'Number of champs', sum(Y)
 		return Y
-
 
 	def test_classifier(clf, X, Y):
 		folds = StratifiedKFold(Y, 18)
@@ -159,7 +155,6 @@ for year in squads:
 			aucs.append(roc_auc_score(Y[test], prediction_prob[:, 1]))
 		print clf.__class__.__name__, aucs, numpy.mean(aucs)
 
-
 	def main():
 		teams, champs = load()
 		X = create_input(teams)
@@ -168,7 +163,6 @@ for year in squads:
 		# the test_fold corresponds to the number of rows are going to be used for which:
 		# either to be used for training only (-1) or to be used in a testing group (0)
 		ps = PredefinedSplit(test_fold=([-1]*(len(teams)-amt-mod)+[0]*amt+[-1]*(mod)))
-
 		resSGD = scipy.zeros(amt)
 		# going to run a 1000 simulations
 		sims = 1000
@@ -176,14 +170,12 @@ for year in squads:
 			# get X and Y test and train data
 			X_train, X_test = X[train_index], X[test_index]
 			y_train, y_test = Y[train_index], Y[test_index]
-
 			for i in range(0,sims):
 				clf = linear_model.SGDClassifier(loss='log')
 				clf.fit(X_train, y_train)
 				cur = clf.predict(X_test)
 				#resSGD is a cumulation of all predicted winners in all simulations
 				resSGD = map(add, resSGD, cur)
-
 		print "SGD Classifier"
 		# dividing wins for each team by the number of simulations
 		playoffDF = pd.read_csv('data/season_stats_playoffs.csv')
@@ -196,17 +188,13 @@ for year in squads:
 			# normalize so its all out of 100%
 			print str(squad[i])+": "+str(round(100*resSGD[i]/sum(resSGD), 1))
 		print "\n\n"
-
 		# different classifiers to test AUC
 		clf = linear_model.SGDClassifier(loss='log')
 		test_classifier(clf, X, Y)
-
 		clf = GaussianNB()
 		test_classifier(clf, X, Y)
-
 		clf = RandomForestClassifier(n_estimators=10, max_depth=10)
 		test_classifier(clf, X, Y)
-
 
 	if __name__ == '__main__':
 		main()
