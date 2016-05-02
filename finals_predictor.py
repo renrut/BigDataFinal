@@ -79,122 +79,124 @@ indices = {
 	'TS_PCT':39,
 	'PACE':40,
 	'PIE':41,
-	'TEAM_PER':42
+	'TEAM_PER':42,
+	'FTHELP':43
 }
 
-for year in squads:
-	#year = 2015
-	print "YEAR = "+str(year)
+#for year in squads:
+year = 2015
+print "YEAR = "+str(year)
 
-	# mod is used as basically a way to shift the position of the train and test sets. Has to be variable as
-	# the amount of NBA teams isnt always 30
-	mod = 0
-	for i in range(2014,year,-1):
-		mod += len(squads[i])
-	squad = squads[year]
-	# number of teams in the current year
-	amt = len(squad)
+# mod is used as basically a way to shift the position of the train and test sets. Has to be variable as
+# the amount of NBA teams isnt always 30
+mod = 0
+for i in range(2014,year,-1):
+	mod += len(squads[i])
+squad = squads[year]
+# number of teams in the current year
+amt = len(squad)
 
-	def load_teams():
-		# read in data into Pandas DataFrame
-		df = pd.read_csv('data/combo_stats_regular_season.csv')
-		teams = []
-		# self-descriptive. What these indices correspond to are listed above
-		stats_to_use = ['SEASON_ID','TEAM_ID','TEAM_NAME','GP','W','L','W_PCT','FG_PCT','FG3_PCT',
-						'FT_PCT','AST_TO','AST_PCT','STL','BLK','REB_PCT','NET_RATING','PLUS_MINUS','TEAM_PER']
-		# converting every row into a list and then appending it to the input matrix stored into an array
-		for index, row in df.iterrows():
-			teams.append([row.tolist()[indices[x]] for x in stats_to_use])
-		# for now ignore the most recent season as it screws up data of past years
-		return teams[:-30]
+def load_teams():
+	# read in data into Pandas DataFrame
+	df = pd.read_csv('data/combo_stats_regular_season.csv')
+	teams = []
+	# self-descriptive. What these indices correspond to are listed above
+	stats_to_use = ['SEASON_ID','TEAM_ID','TEAM_NAME','GP','W','L','W_PCT','FG_PCT','FG3_PCT',
+					'FT_PCT','AST_TO','AST_PCT','STL','BLK','REB_PCT','NET_RATING','PLUS_MINUS','FTHELP']
+	# converting every row into a list and then appending it to the input matrix stored into an array
+	for index, row in df.iterrows():
+		teams.append([row.tolist()[indices[x]] for x in stats_to_use])
+	# for now ignore the most recent season as it screws up data of past years
+	return teams
 
-	# TEAM_ID, SEASON_ID, champs
-	def load_champs():
-		# read champs data to Pandas DataFrame
-		df = pd.read_csv('data/champs.csv')
-		champs = {}
-		# mark a (team, year) tuple as champions or not
-		for index, row in df.iterrows():
-			line = row.tolist()
-			team = line[0]
-			year = line[1]
-			if line[2]==1.0:
-				champs[(team, year)] = 1
-		return champs
+# TEAM_ID, SEASON_ID, champs
+def load_champs():
+	# read champs data to Pandas DataFrame
+	df = pd.read_csv('data/champs.csv')
+	champs = {}
+	# mark a (team, year) tuple as champions or not
+	for index, row in df.iterrows():
+		line = row.tolist()
+		team = line[0]
+		year = line[1]
+		if line[2]==1.0:
+			champs[(team, year)] = 1
+	return champs
 
-	def load():
-		return load_teams(), load_champs()
+def load():
+	return load_teams(), load_champs()
 
-	def create_input(teams):
-		# don't want to cinlude SEASON_ID,TEAM_ID,TEAM_NAME,GP,W,L in predicition
-		SKIP = 6
-		WIDTH = len(teams[0]) - SKIP
-		X = scipy.zeros((len(teams), WIDTH))
-		for i in range(0, len(teams)):
-			for j in range(SKIP,len(teams[0])):
-				X[i, j-SKIP] = teams[i][j] if teams[i][j] != '' else 0
-		return X
+def create_input(teams):
+	# don't want to cinlude SEASON_ID,TEAM_ID,TEAM_NAME,GP,W,L in predicition
+	SKIP = 6
+	WIDTH = len(teams[0]) - SKIP
+	X = scipy.zeros((len(teams), WIDTH))
+	for i in range(0, len(teams)):
+		for j in range(SKIP,len(teams[0])):
+			X[i, j-SKIP] = teams[i][j] if teams[i][j] != '' else 0
+	return X
 
-	def create_output(teams, champs):
-		# for every team/season combination mark if champs or not
-		Y = scipy.zeros(len(teams))
-		for i in range(0, len(teams)):
-			year = teams[i][0]
-			team = teams[i][1]
-			if (team, year) in champs:
-				Y[i] = 1
-		return Y
+def create_output(teams, champs):
+	# for every team/season combination mark if champs or not
+	Y = scipy.zeros(len(teams))
+	for i in range(0, len(teams)):
+		year = teams[i][0]
+		team = teams[i][1]
+		if (team, year) in champs:
+			Y[i] = 1
+	return Y
 
-	def test_classifier(clf, X, Y):
-		folds = StratifiedKFold(Y, 18)
-		aucs = []
-		for train, test in folds:
-			clf.fit(X[train], Y[train])
-			prediction_prob = clf.predict_proba(X[test])
-			prediction = clf.predict(X[test])
-			aucs.append(roc_auc_score(Y[test], prediction_prob[:, 1]))
-		print clf.__class__.__name__, aucs, numpy.mean(aucs)
+def test_classifier(clf, X, Y):
+	folds = StratifiedKFold(Y, 18)
+	aucs = []
+	for train, test in folds:
+		clf.fit(X[train], Y[train])
+		prediction_prob = clf.predict_proba(X[test])
+		prediction = clf.predict(X[test])
+		aucs.append(roc_auc_score(Y[test], prediction_prob[:, 1]))
+	print clf.__class__.__name__, aucs, numpy.mean(aucs)
 
-	def main():
-		teams, champs = load()
-		X = create_input(teams)
-		Y = create_output(teams, champs)
-		# to explicitly define what are the test and train sets
-		# the test_fold corresponds to the number of rows are going to be used for which:
-		# either to be used for training only (-1) or to be used in a testing group (0)
-		ps = PredefinedSplit(test_fold=([-1]*(len(teams)-amt-mod)+[0]*amt+[-1]*(mod)))
-		resSGD = scipy.zeros(amt)
-		# going to run a 1000 simulations
-		sims = 1000
-		for train_index, test_index in ps:
-			# get X and Y test and train data
-			X_train, X_test = X[train_index], X[test_index]
-			y_train, y_test = Y[train_index], Y[test_index]
-			for i in range(0,sims):
-				clf = linear_model.SGDClassifier(loss='log')
-				clf.fit(X_train, y_train)
-				cur = clf.predict(X_test)
-				#resSGD is a cumulation of all predicted winners in all simulations
-				resSGD = map(add, resSGD, cur)
-		print "SGD Classifier"
-		# dividing wins for each team by the number of simulations
-		playoffDF = pd.read_csv('data/season_stats_playoffs.csv')
-		playoffDF = playoffDF.loc[playoffDF['SEASON_ID'] == 40000+year]
-		resSGD = numpy.true_divide(resSGD, sims)
-		for i in range(0,amt):
-			if not any(playoffDF.TEAM_NAME == squad[i]):
-				resSGD[i] = 0.0
-		for i in range(0,amt):
-			# normalize so its all out of 100%
-			print str(squad[i])+": "+str(round(100*resSGD[i]/sum(resSGD), 1))
-		print "\n\n"
-		# different classifiers to test AUC
-		clf = linear_model.SGDClassifier(loss='log')
-		test_classifier(clf, X, Y)
-		clf = GaussianNB()
-		test_classifier(clf, X, Y)
-		clf = RandomForestClassifier(n_estimators=10, max_depth=10)
-		test_classifier(clf, X, Y)
+def main():
+	teams, champs = load()
+	X = create_input(teams)
+	Y = create_output(teams, champs)
+	# to explicitly define what are the test and train sets
+	# the test_fold corresponds to the number of rows are going to be used for which:
+	# either to be used for training only (-1) or to be used in a testing group (0)
+	ps = PredefinedSplit(test_fold=([-1]*(len(teams)-amt-mod)+[0]*amt))
+	#+[-1]*(mod)))
+	resSGD = scipy.zeros(amt)
+	# going to run a 1000 simulations
+	sims = 1000
+	for train_index, test_index in ps:
+		# get X and Y test and train data
+		X_train, X_test = X[train_index], X[test_index]
+		y_train, y_test = Y[train_index], Y[test_index]
+		for i in range(0,sims):
+			clf = linear_model.SGDClassifier(loss='log')
+			clf.fit(X_train, y_train)
+			cur = clf.predict(X_test)
+			#resSGD is a cumulation of all predicted winners in all simulations
+			resSGD = map(add, resSGD, cur)
+	print "SGD Classifier"
+	# dividing wins for each team by the number of simulations
+	playoffDF = pd.read_csv('data/season_stats_playoffs.csv')
+	playoffDF = playoffDF.loc[playoffDF['SEASON_ID'] == 40000+year]
+	resSGD = numpy.true_divide(resSGD, sims)
+	for i in range(0,amt):
+		if not any(playoffDF.TEAM_NAME == squad[i]):
+			resSGD[i] = 0.0
+	for i in range(0,amt):
+		# normalize so its all out of 100%
+		print str(squad[i])+": "+str(round(100*resSGD[i]/sum(resSGD), 1))
+	print "\n\n"
+	# different classifiers to test AUC
+	clf = linear_model.SGDClassifier(loss='log')
+	test_classifier(clf, X, Y)
+	clf = GaussianNB()
+	test_classifier(clf, X, Y)
+	clf = RandomForestClassifier(n_estimators=10, max_depth=10)
+	test_classifier(clf, X, Y)
 
-	if __name__ == '__main__':
-		main()
+if __name__ == '__main__':
+	main()
