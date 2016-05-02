@@ -1,10 +1,8 @@
 # BigDataFinal
 Final project for Vanderbilt Big Data CS3892. 
 #Goal
-The goal of this project is to accurately predict which NBA teams will make it to the playoffs using data pulled from ESPN.com, Wikipedia, Twitter, and other news sources.
-
-#Model
-Our model is a work in progress, but we use player and team popularity, team streakiness, injuries, player records, and playoff history from previous seasons.
+The goal of this project is to accurately predict which NBA teams will make it to the playoffs using data pulled from ESPN.com, Basketball-Reference and Stats.NBA.com.
+The data will be transformed with Map-Reduce and processed and modelled using machine learning, specifically, Python's Sci-Kit Learn Module.
 
 #Note
 Many of our scripts need to be run in the root folder to properly access the data.
